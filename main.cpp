@@ -29,16 +29,18 @@ Vec3 color(const Ray& r, std::unique_ptr<HittableList>& world, unsigned int dept
 
 int main() {
 	// Screen width (nx) and height (ny)
-	int nx = 800;
-	int ny = 500;
+	int nx = 1600;
+	int ny = 1000;
 	// Number of samples per pixel
-	int ns = 2;
-	Camera cam(nx, ny, Vec3(0, 1, 0), Vec3(0,0,-2), 3.14159265/4);
+	int ns = 100;
+	Vec3 camera_pos, look_at;
+	std::cin >> nx >> ny >> ns >> camera_pos >> look_at;
+	Camera cam(nx, ny, camera_pos, look_at, 3.14159265/4);
 	std::cout << "P3\n" << nx << " " << ny << "\n255\n";
 	std::unique_ptr<HittableList> hittableList(new HittableList());
 	std::shared_ptr<Material> shiny(new Metal(Vec3(1,1,1), 0.0));
 	std::shared_ptr<Material> matte(new Lambertian(Vec3(0.5, 0.5, 0.5)));
-	std::shared_ptr<Material> velvet(new Lambertian(Vec3(0.5, 0.2, 0.3)));
+	std::shared_ptr<Material> velvet(new Metal(Vec3(0.53, 0.14, 0.16), 0.5));
 	std::shared_ptr<Material> glass(new Dielectric(Vec3(1.0, 1.0, 1.0), 1.7, 0.0));
 	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0, 0, -2.0), 0.5, shiny)));
 	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0.5, 0, -1.0), 0.2, matte)));
