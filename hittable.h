@@ -4,11 +4,15 @@
 #include <vector>
 #include "ray.h"
 
+class Material;
+
 struct Intersection {
 	float t;
 	Vec3 point;
 	Vec3 normal;
+	Material* mat;
 };
+
 
 class Hittable {
 	public:
