@@ -2,3 +2,5 @@
 *.ppm
 stb_image*.h
 *.png
+.DS_Store
+*.mp4
