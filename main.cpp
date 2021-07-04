@@ -58,16 +58,17 @@ int main(int argc, char *argv[]) {
 	std::shared_ptr<Material> matte(new Lambertian(Vec3(0.5, 0.5, 0.5)));
 	std::shared_ptr<Material> velvet(new Metal(Vec3(0.53, 0.14, 0.16), 0.5));
 	std::shared_ptr<Material> glass(new Dielectric(Vec3(1.0, 1.0, 1.0), 1.7, 0.0));
-	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0, 0, -2.0), 0.5, shiny)));
-	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0.5, 0, -1.0), 0.2, matte)));
-	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(-0.2, -0.3, -1.0), 0.2, glass)));
-	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0, -100.5, -1), 100, matte)));
-	for (int i = 0; i < 25; i++) {
-		Vec3 pos(drand48() * 2 - 1, drand48() * 2 - 1, -1 - drand48());
+	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0, 0.5, -2.0), 0.5, shiny)));
+	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(-0.1, 0.5, -3.0), 0.5, glass)));
+	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0, -1000, -1), 1000, matte)));
+	for (int i = 0; i < 200; i++) {
+		Vec3 pos(drand48() * 6.0 - 3.0, 0.05, drand48() * 6.0 - 6.0);
 		if (drand48() < 0.5) {
-			hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(pos, 0.05, glass)));
+			std::shared_ptr<Material> mat(new Dielectric(Vec3(drand48(), drand48(), drand48()), 1.5, drand48()/10));
+			hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(pos, 0.05, mat)));
 		} else {
-			hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(pos, 0.05, velvet)));
+			std::shared_ptr<Material> mat(new Metal(Vec3(drand48(), drand48(), drand48()), drand48()/10));
+			hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(pos, 0.05, mat)));
 		}
 	}
 	std::vector<uint8_t> pixels(nx * ny * 3);
