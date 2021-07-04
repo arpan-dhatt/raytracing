@@ -38,15 +38,20 @@ Vec3 color(const Ray& r, std::unique_ptr<HittableList>& world, unsigned int dept
 }
 
 int main(int argc, char *argv[]) {
-	if (argc < 2) return 0;
+	if (argc < 11) return 0;
 	char* filename = argv[1];
 	// Screen width (nx) and height (ny)
-	int nx = 1600;
-	int ny = 1000;
+	int nx = (int)strtol(argv[2], &argv[2], 10);
+	int ny = (int)strtol(argv[3], &argv[3], 10);
 	// Number of samples per pixel
-	int ns = 100;
+	int ns = (int)strtol(argv[4], &argv[4], 10);
 	Vec3 camera_pos, look_at;
-	std::cin >> nx >> ny >> ns >> camera_pos >> look_at;
+	camera_pos.e[0] = strtof(argv[5], &argv[5]);
+	camera_pos.e[1] = strtof(argv[6], &argv[6]);
+	camera_pos.e[2] = strtof(argv[7], &argv[7]);
+	look_at.e[0] = strtof(argv[8], &argv[8]);
+	look_at.e[1] = strtof(argv[9], &argv[9]);
+	look_at.e[2] = strtof(argv[10], &argv[10]);
 	Camera cam(nx, ny, camera_pos, look_at, 3.14159265/4);
 	std::unique_ptr<HittableList> hittableList(new HittableList());
 	std::shared_ptr<Material> shiny(new Metal(Vec3(1,1,1), 0.0));
