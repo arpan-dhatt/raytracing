@@ -1,2 +1,4 @@
 *.out
 *.ppm
+stb_image*.h
+*.png
