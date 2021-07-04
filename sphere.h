@@ -7,6 +7,7 @@ class Sphere: public Hittable {
 		Sphere() {}
 		Sphere(Vec3 cen, float r) : center(cen), radius(r) {}
 		bool hit(const Ray& r, float t_min, float t_max, Intersection& intersect) const;
+		~Sphere() {}
 		Vec3 center;
 		float radius;
 };

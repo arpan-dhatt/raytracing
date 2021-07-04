@@ -13,12 +13,14 @@ struct Intersection {
 class Hittable {
 	public:
 		virtual bool hit(const Ray& r, float t_min, float t_max, Intersection& intersect) const = 0;
+		virtual ~Hittable() {}
 };
 
 class HittableList: public Hittable {
 	public:
 		HittableList() {}
 		bool hit(const Ray& r, float t_min, float t_max, Intersection& intersect) const;
+		~HittableList() {}
 		std::vector<std::unique_ptr<Hittable>> list;
 };
 

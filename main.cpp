@@ -21,7 +21,7 @@ Vec3 color(const Ray& r, std::unique_ptr<HittableList>& world) {
 		// Calculation of background color since nothing hit
 		Vec3 unit_direction = r.direction().unit();
 		float t = 0.5 * (unit_direction.y() + 1.0);
-		return (1.0 - t) * Vec3(1.0, 1.0, 1.0) + t * Vec3(0.0, 0.7, 1.0);
+		return (1.0 - t) * Vec3(1.0, 1.0, 1.0) + t * Vec3(0.5, 0.7, 1.0);
 	}
 }
 
@@ -56,6 +56,7 @@ int main() {
 				col += color(r, hittableList);
 			}
 			col /= float(ns);
+			col = Vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
 			int ir = int(255.99 * col.r());
 			int ig = int(255.99 * col.g());
 			int ib = int(255.99 * col.b());
