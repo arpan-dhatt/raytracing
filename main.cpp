@@ -4,6 +4,7 @@
 #include "hittable.h"
 #include "sphere.h"
 #include "mat.h"
+#include "cam.h"
 
 const unsigned int MAX_DEPTH = 10;
 
@@ -31,23 +32,26 @@ int main() {
 	int nx = 800;
 	int ny = 500;
 	// Number of samples per pixel
-	int ns = 100;
-	float aspect_ratio = float(nx) / float(ny);
+	int ns = 2;
+	Camera cam(nx, ny, Vec3(0, 1, 0), Vec3(0,0,-2), 3.14159265/4);
 	std::cout << "P3\n" << nx << " " << ny << "\n255\n";
-	Vec3 lower_left_corner(-aspect_ratio, -1.0, -1.0);
-	Vec3 horizontal(aspect_ratio * 2, 0.0, 0.0);
-	Vec3 vertical(0.0, 2.0, 0.0);
-	Vec3 origin;
 	std::unique_ptr<HittableList> hittableList(new HittableList());
 	std::shared_ptr<Material> shiny(new Metal(Vec3(1,1,1), 0.0));
 	std::shared_ptr<Material> matte(new Lambertian(Vec3(0.5, 0.5, 0.5)));
-	std::shared_ptr<Material> velvet(new Lambertian(Vec3(0.1, 0.1, 0.1)));
+	std::shared_ptr<Material> velvet(new Lambertian(Vec3(0.5, 0.2, 0.3)));
 	std::shared_ptr<Material> glass(new Dielectric(Vec3(1.0, 1.0, 1.0), 1.7, 0.0));
 	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0, 0, -2.0), 0.5, shiny)));
-	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0.5, 0, -1.0), 0.2, velvet)));
-	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0.0, -0.3, -1.0), 0.2, glass)));
-	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0.0, -0.3, -1.0), -0.15, glass)));
+	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0.5, 0, -1.0), 0.2, matte)));
+	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(-0.2, -0.3, -1.0), 0.2, glass)));
 	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0, -100.5, -1), 100, matte)));
+	for (int i = 0; i < 25; i++) {
+		Vec3 pos(drand48() * 2 - 1, drand48() * 2 - 1, -1 - drand48());
+		if (drand48() < 0.5) {
+			hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(pos, 0.05, glass)));
+		} else {
+			hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(pos, 0.05, velvet)));
+		}
+	}
 	/* Looping where j=0, i=0 is the lower left corner
 	 * since writing to the file starts from the top
 	 * left of the screen.
@@ -57,9 +61,7 @@ int main() {
 			// <u,v> coordinates of the point to get un-normalized direction
 			Vec3 col;
 			for (int s = 0; s < ns; s++) {
-				float u = float(i + drand48()) / float(nx);
-				float v = float(j + drand48()) / float(ny);
-				Ray r(origin, lower_left_corner + u*horizontal + v*vertical);
+				Ray r = cam.get_ray(i, j);
 				col += color(r, hittableList, 0);
 			}
 			col /= float(ns);
