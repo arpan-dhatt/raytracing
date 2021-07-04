@@ -41,7 +41,7 @@ public:
   inline float mag() const;
   inline float sq_mag() const;
   inline void make_unit();
-  inline Vec3 unit();
+  inline Vec3 unit() const;
 
   float e[3];
 };
@@ -133,7 +133,7 @@ inline float Vec3::sq_mag() const {
 
 inline void Vec3::make_unit() { *this /= this->mag(); }
 
-inline Vec3 Vec3::unit() { return *this / this->mag(); }
+inline Vec3 Vec3::unit() const { return *this / this->mag(); }
 
 inline Vec3 operator+(const Vec3 &v1, const Vec3 &v2) {
   return Vec3(v1.e[0] + v2.e[0], v1.e[1] + v2.e[1], v1.e[2] + v2.e[2]);
@@ -193,6 +193,23 @@ inline Vec3 random_in_unit_sphere() {
 
 inline Vec3 reflect(const Vec3 &v, const Vec3 &N) {
   return v - 2 * dot(v, N) * N;
+}
+
+inline bool refract(const Vec3& v, const Vec3& n, float ni_over_nt, Vec3& refracted) {
+	Vec3 uv = v.unit();
+	float dt = dot(uv, n);
+	float discriminant = 1.0 - ni_over_nt*ni_over_nt*(1-dt*dt);
+	if (discriminant > 0) {
+		refracted = ni_over_nt*(uv-n*dt) - n*sqrt(discriminant);
+		return true;
+	}
+	else return false;
+}
+
+inline float schlick(float cosine, float ref_ind) {
+	float r0 = (1-ref_ind) / (1+ref_ind);
+	r0 = r0 * r0;
+	return r0 + (1-r0)*pow((1-cosine), 5);
 }
 
 #endif

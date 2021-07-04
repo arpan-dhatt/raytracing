@@ -39,16 +39,15 @@ int main() {
 	Vec3 vertical(0.0, 2.0, 0.0);
 	Vec3 origin;
 	std::unique_ptr<HittableList> hittableList(new HittableList());
-	std::shared_ptr<Material> shiny(new Metal(Vec3(1,1,1), 0.25));
+	std::shared_ptr<Material> shiny(new Metal(Vec3(1,1,1), 0.0));
 	std::shared_ptr<Material> matte(new Lambertian(Vec3(0.5, 0.5, 0.5)));
 	std::shared_ptr<Material> velvet(new Lambertian(Vec3(0.1, 0.1, 0.1)));
+	std::shared_ptr<Material> glass(new Dielectric(Vec3(1.0, 1.0, 1.0), 1.7, 0.0));
 	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0, 0, -2.0), 0.5, shiny)));
 	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0.5, 0, -1.0), 0.2, velvet)));
+	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0.0, -0.3, -1.0), 0.2, glass)));
+	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0.0, -0.3, -1.0), -0.15, glass)));
 	hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(Vec3(0, -100.5, -1), 100, matte)));
-	for (int i = 0; i < 10; i++) {
-		Vec3 pos = Vec3(drand48() - 0.5, drand48() - 0.5, -drand48()-0.5);
-		hittableList->list.push_back(std::unique_ptr<Hittable>(new Sphere(pos, 0.05, matte)));
-	}
 	/* Looping where j=0, i=0 is the lower left corner
 	 * since writing to the file starts from the top
 	 * left of the screen.

@@ -2,6 +2,7 @@
 #define MAT_H
 #include "hittable.h"
 #include "vec3.h"
+#include <cstdlib>
 
 class Material {
 	public:
@@ -36,4 +37,44 @@ class Metal : public Material {
 		Vec3 albedo;
 		float diffusion;
 };
+
+class Dielectric : public Material {
+	public:
+		Dielectric(const Vec3 alb, const float ri, const float diff) : albedo(alb), ref_ind(ri), diffusion(diff) {}
+		bool scatter(const Ray& incoming, const Intersection& intersect, Vec3& attenuation, Ray& scatter) const {
+			Vec3 outward_normal;
+			Vec3 reflected = reflect(incoming.direction(), intersect.normal);
+			float ni_over_nt;
+			attenuation = albedo;
+			Vec3 refracted;
+			float reflect_prob;
+			float cosine;
+			if (dot(incoming.direction(), intersect.normal) > 0) {
+				outward_normal = -intersect.normal;
+				ni_over_nt = ref_ind;
+				cosine = ref_ind * dot(incoming.direction(), intersect.normal) / incoming.direction().mag();
+			} else {
+				outward_normal = intersect.normal;
+				ni_over_nt = 1.0/ref_ind;
+				cosine = - ref_ind * dot(incoming.direction(), intersect.normal) / incoming.direction().mag();
+			}
+			if (refract(incoming.direction(), outward_normal, ni_over_nt, refracted)) {
+				reflect_prob = schlick(cosine, ref_ind);
+			} else {
+				scatter = Ray(intersect.point, reflected);
+				reflect_prob = 1.0;
+			}
+			if (drand48() < reflect_prob) {
+				scatter = Ray(intersect.point, reflected);
+			} else {
+				scatter = Ray(intersect.point, refracted);
+			}
+			scatter.B += random_in_unit_sphere() * diffusion;
+			return true;
+		}
+		~Dielectric() {}
+		Vec3 albedo;
+		float ref_ind, diffusion;
+};
+
 #endif
