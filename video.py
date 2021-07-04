@@ -27,14 +27,11 @@ def add(v1: tuple, v2: tuple):
 def sub(v1: tuple, v2: tuple):
     return (v1[0] - v2[0], v1[1] - v2[1], v1[2] - v2[2])
 
-def render_image(data: tuple) -> bool:
-    progress = data[0]
-    frame = data[1]
+def render_image(frame: int):
+    print(f"{frame}/{FRAMES}")
     pos = add(scale(sub(END, STARTING), frame/FRAMES), STARTING)
     target = TARGET
     subprocess.run(list(map( str, [RENDER_PROGRAM, IMAGE_FOLDER + f"image-{frame}.png", WIDTH, HEIGHT, SAMPLES_PER_FRAME, pos[0], pos[1], pos[2], target[0], target[1], target[2]])));
-    progress.value += 1
-    print(f"{progress.value}/{FRAMES}")
     return True
 
 def use_ffmpeg():
@@ -48,6 +45,5 @@ if __name__ == "__main__":
         os.remove(VIDEO_OUTPUT)
     print("Beginning Render")
     with mp.Pool(processes=MAX_PROCESSES) as pool:
-        progress = mp.Value('i', 0)
-        pool.map(render_image, map(lambda n: (progress, n), range(FRAMES)))
+        pool.map(render_image, range(FRAMES))
     use_ffmpeg()
